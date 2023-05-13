@@ -11,13 +11,13 @@ class Style:
         self.widget_font = ("Roboto", 30, "normal")
 
         #Dark mode
-        self.primary = "#474747" #Lighter
-        self.secondary = "#333333" #Darker
-        self.text_color = "#76a5a6" #Light Blue
-        self.accent = "#b8b8b8" #Lightest
-        self.background = "#121212" #Dark background
-        self.title_color = "#915b31" #Deep orange
-        self.border_color = "#bababa" #Light Gray
+        self.primary = "#d2d3db"
+        self.secondary = "#9394a5"
+        self.text_color = "black" 
+        self.accent = "#b8b8b8"
+        self.background = "#fafafa"
+        self.title_color = "#484b6a"
+        self.border_color = "#484b6a"
         #Light mode
 
 
@@ -31,59 +31,59 @@ class ItemWidget:
         self.aisle = aisle
         self.shelf = shelf
 
+        self.item_frame = Frame(self.frame, bg=style.primary)
+        name_label = Label(self.item_frame, text=self.name, font=style.default_font, fg=style.text_color, bg=style.primary, width=20)
+        count_label = Label(self.item_frame, text=self.count, font=style.default_font, fg=style.text_color, bg=style.primary, width=20)
+        ref_code_label = Label(self.item_frame, text=self.ref_code, font=style.default_font, fg=style.text_color, bg=style.primary, width=20)
+        aisle_label = Label(self.item_frame, text=self.aisle, font=style.default_font, fg=style.text_color, bg=style.primary, width=20)
+        shelf_label = Label(self.item_frame, text=self.shelf, font=style.default_font, fg=style.text_color, bg=style.primary, width=20)
+        name_label.grid(row=0, column=0, padx=5, pady=2)
+        count_label.grid(row=0, column=1, padx=5, pady=2)
+        ref_code_label.grid(row=0, column=2, padx=5, pady=2)
+        aisle_label.grid(row=0, column=3, padx=5, pady=2)
+        shelf_label.grid(row=0, column=4, padx=5, pady=2)
 
 """Main GUI class"""
 class Gui:
     def __init__(self, parent):
-        self.stock_list = []
-        #Frame layout
-        navbar = Frame(parent, width=(window_width * 0.05), height=window_height, bg=style.secondary,
-                       highlightbackground=style.accent, highlightthickness=1, bd=0, relief="solid")
-        main = Frame(parent, width=(window_width * 0.95), height=window_height, bg=style.background)
-        navbar.grid(row=0, column=0)
-        main.grid(row=0, column=1)
+        navbar = Frame(parent, bg=style.secondary)
+        main = Frame(parent)
+        navbar.pack(fill='x', side='top')
+        main.pack()
 
+        self.items_list = []
 
         """------Nav bar------"""
-        stock = Button(navbar, text="Stock", font=style.button_font, height=1, bg=style.accent, fg=style.primary, command=self.goto_stock)
-        orders = Button(navbar, text="Orders", font=style.button_font, height=1, bg=style.accent, fg=style.primary, command=self.goto_orders)
-        settings = Button(navbar, text="Settings", font=style.button_font, height=1, bg=style.accent, fg=style.primary, command=self.goto_settings)
-        stock.pack(padx=5, pady=(window_height * 0.3)/2)
-        orders.pack(padx=5, pady=(window_height * 0.3)/2)
-        settings.pack(padx=5, pady=(window_height * 0.3)/2)
+        #Create and grid Buttons
+        stock = Button(navbar, text="Stock", font=style.button_font, height=1, bg=style.accent, fg=style.text_color, command=self.goto_stock)
+        orders = Button(navbar, text="Orders", font=style.button_font, height=1, bg=style.accent, fg=style.text_color, command=self.goto_orders)
+        shipments = Button(navbar, text="Shipments", font=style.button_font, height=1, bg=style.accent, fg=style.text_color, command=self.goto_shipments)
+        settings = Button(navbar, text="Settings", font=style.button_font, height=1, bg=style.accent, fg=style.text_color, command=self.goto_settings)
+        stock.grid(padx=5, pady=2, row=0, column=0)
+        orders.grid(padx=5, pady=2, row=0, column=1)
+        shipments.grid(padx=6, pady=2, row=0, column=2)
+        settings.grid(padx=5, pady=2, row=0, column=3)
 
         """------Stock Page-------"""
         #Create stock page frame
-        self.stock_page = Frame(main, height=window_height, bg=style.primary)
+        self.stock_page = Frame(main, bg=style.primary)
 
-        """Search bar"""
+        """Search tab"""
         #Create search bar page frame
         stock_search = Frame(self.stock_page, bg=style.primary, 
                              highlightbackground=style.border_color, highlightthickness=1, bd=0, relief="solid")
         stock_search.pack(fill='x')
 
-        #Title
-        search_title = Label(stock_search, text="Stock", font=style.title_font, fg=style.title_color, bg=style.primary, height=(int(window_height * 0.003)))
-        search_title.pack(side='left')
-
-        divide = Frame(stock_search, bg=style.primary)
-        divide.pack(side='right')
-
-        #Reload Button
-        reload_button = Button(divide, text="Reloud", font=style.default_font, command=self.reload)
-        reload_button.grid(row=0, column=0)
-        #Add new button
-        new_item_button = Button(divide, text="+", font=style.title_font, command=self.new_item)
-        new_item_button.grid(row=0,column=1)
-        #Radiobutton frame
-        radiobutton_frame = Frame(divide, bg=style.primary)
-        radiobutton_frame.grid(row=0, column=2, padx=5)
-        #Search bar frame
-        search_bar_frame = Frame(divide, bg=style.primary)
-        search_bar_frame.grid(row=0, column=3, padx=5)
-
+        #reload button
+        reload_button = Button(stock_search, text="Reload", font=style.button_font, bg=style.accent, fg=style.text_color, command=self.reload_list)
+        reload_button.grid(row=0, column=0, padx=5, pady=2,)
+        #Add stock item button
+        new_button = Button(stock_search, text="Add new stock", font=style.button_font, bg=style.accent, fg=style.text_color, command=self.new_item)
+        new_button.grid(row=0, column=1, padx=5, pady=2,)
 
         #Radio button for which value to search
+        radiobutton_frame = Frame(stock_search, bg=style.primary)
+        radiobutton_frame.grid(row=0, column=2, padx=5, pady=2,)
         self.v = IntVar()
         self.v.set(1)
         search_name = Radiobutton(radiobutton_frame, variable=self.v, value="name", text="Name", bg=style.primary, fg=style.text_color, font=style.default_font)
@@ -100,69 +100,113 @@ class Gui:
         search_ref_code.grid(row=0, column=2)
 
         #Search bar frame
+        search_bar_frame = Frame(stock_search, bg=style.primary)
+        search_bar_frame.grid(row=0, column=3, padx=5, pady=2)
         search_bar = Entry(search_bar_frame, width=30)
         search_bar.grid(row=0, column=0)
         #Search button
-        search_button = Button(search_bar_frame, text="Search", font=style.button_font, bg=style.accent, fg=style.primary)
+        search_button = Button(search_bar_frame, text="Search", font=style.button_font, bg=style.accent, fg=style.text_color)
         search_button.grid(row=0,column=1, padx=5)
 
-        """Create list of items frame"""
+        """List frame"""
+        #Stock items list frame
         stock_items = Frame(self.stock_page, bg=style.primary)
         stock_items.pack()
 
-        #Data names
-        top_frame = Frame(stock_items, bg=style.primary, 
-                             highlightbackground=style.border_color, highlightthickness=1, bd=0, relief="solid")
-        top_frame.pack()
-        item_title_padx = 92
-        item_name = Label(top_frame, text="Name", padx=item_title_padx, font=style.default_font, fg=style.text_color, bg=style.primary)
-        item_count = Label(top_frame, text="Count", padx=item_title_padx, font=style.default_font, fg=style.text_color, bg=style.primary)
-        item_ref_code = Label(top_frame, text="Refrence code", padx=item_title_padx, font=style.default_font, fg=style.text_color, bg=style.primary)
-        item_aisle = Label(top_frame, text="Aisle", padx=item_title_padx, font=style.default_font, fg=style.text_color, bg=style.primary)
-        item_shelf = Label(top_frame, text="Shelf", padx=item_title_padx, font=style.default_font, fg=style.text_color, bg=style.primary)
-        item_name.grid(row=0, column=0)
-        item_count.grid(row=0, column=1)
-        item_ref_code.grid(row=0, column=2)
-        item_aisle.grid(row=0, column=3)
-        item_shelf.grid(row=0, column=4)
+        #Item titles label
+        item_title = Frame(stock_items)
+        item_title.pack(fill='x')
 
-        #Create scrollable frame
-        self.scrollpage = Canvas(stock_items, height=(window_height * 0.883), width=(window_width * 0.95), bg=style.background)
+        name_label = Label(item_title, text="Name", font=style.default_font, fg=style.text_color, width=20)
+        count_label = Label(item_title, text="Count", font=style.default_font, fg=style.text_color, width=20)
+        ref_code_label = Label(item_title, text="Refrence code", font=style.default_font, fg=style.text_color, width=20)
+        aisle_label = Label(item_title, text="Aisle", font=style.default_font, fg=style.text_color, width=20)
+        shelf_label = Label(item_title, text="Shelf", font=style.default_font, fg=style.text_color, width=20)
+        name_label.grid(row=0, column=0, padx=5, pady=2)
+        count_label.grid(row=0, column=1, padx=5, pady=2)
+        ref_code_label.grid(row=0, column=2, padx=5, pady=2)
+        aisle_label.grid(row=0, column=3, padx=5, pady=2)
+        shelf_label.grid(row=0, column=4, padx=5, pady=2)
+
+        #Create scrollable canvas
+        self.scrollpage = Canvas(stock_items, height=200, bg=style.background)
         scrollbar = Scrollbar(stock_items, orient="vertical", command=self.scrollpage.yview)
         self.scrollpage.configure(yscrollcommand=scrollbar.set)
         scrollbar.pack(side='right', fill='y')
-        self.scrollpage.pack(fill="both", expand=True)
+        self.scrollpage.pack(fill="x", expand=True)
+
+        #Create a frame within the canvas to put the items into
+        self.items_frame = Frame(self.scrollpage)
+        self.scrollpage.create_window((0, 0), window=self.items_frame, anchor="nw")
 
         # Configure the canvas to fit the content and enable scrolling
         stock_items.update_idletasks()  # Update the frame to get accurate width and height
         self.scrollpage.config(scrollregion=self.scrollpage.bbox("all"))
 
-        """------Orders Page------"""
-        self.orders_page = Frame(main, height=window_height, width = (window_width * 0.95), bg=style.primary)
-        
 
-        """------Settings Page------"""
-        self.settings_page = Frame(main, height=window_height, width = (window_width * 0.95), bg=style.primary)
+        """------Orders page------"""
+        #Create page frame
+        self.orders_page = Frame(main)
+
+
+        """------Shipments page------"""
+        #Create page frame and Title
+        self.shipments_page = Frame(main, bg=style.background)
+        self.shipments_page.pack()
+        enter_page = Frame(self.shipments_page, bg=style.background)
+        add_shipment_l = Label(self.shipments_page, text="Add new Shipment", font=style.title_font, fg=style.title_color, bg=style.background)
+        add_shipment_l.pack(padx=5, pady=2)
+        enter_page.pack()
+
+        #Entrys and labels
+        shipment_title_l = Label(enter_page, text="In stock item name", font=style.default_font, fg=style.text_color, bg=style.background)
+        self.shipment_title_e = Entry(enter_page)
+        shipment_title_l.grid(row=0, column=0, padx=5, pady=2)
+        self.shipment_title_e.grid(row=1, column=0, padx=5, pady=2)
+        shipment_amount_l = Label(enter_page, text="Enter amount", font=style.default_font, fg=style.text_color, bg=style.background)
+        self.shipment_amount_e = Entry(enter_page)
+        shipment_amount_l.grid(row=0, column=1, padx=5, pady=2)
+        self.shipment_amount_e.grid(row=1, column=1, padx=5, pady=2)
+
+        #Add shipment button
+        shipment_add_b = Button(enter_page, text="Add", font=style.button_font, fg=style.text_color, bg=style.primary, command=self.add_shipment)
+        shipment_add_b.grid(row=2, columnspan=2, padx=5, pady=2)
+
+
+        """------Settings page------"""
+        #Create page frame
+        self.settings_page = Frame(main)
+
+
 
     def goto_stock(self):
         self.orders_page.forget()
+        self.shipments_page.forget()
         self.settings_page.forget()
-        self.stock_page.pack(fill='both')
+        self.stock_page.pack()
 
     def goto_orders(self):
         self.stock_page.forget()
         self.settings_page.forget()
+        self.shipments_page.forget()
         self.orders_page.pack()
 
     def goto_settings(self):
         self.stock_page.forget()
         self.orders_page.forget()
+        self.shipments_page.forget()
         self.settings_page.pack()
+
+    def goto_shipments(self):
+        self.stock_page.forget()
+        self.orders_page.forget()
+        self.settings_page.forget()
+        self.shipments_page.pack()
 
     def new_item(self):
         popup = Toplevel()
         popup.title("Add new item")
-        popup.geometry(f"175x175+{window_x}+{window_y}")
+        popup.geometry("175x175")
 
         item_name = Label(popup, text="Item Name")
         self.item_name_entry = Entry(popup, width=10)
@@ -189,34 +233,23 @@ class Gui:
         item_ref_code.grid(row=4, column=0)
         self.item_ref_code_entry.grid(row=4, column=1)
 
-        add = Button(popup, text="Add +", command=self.add_too_list)
+        add = Button(popup, text="Add +", command=self.items_list.append(ItemWidget(self.items_frame, self.item_name_entry.get(), self.item_count_entry.get(), self.item_ref_code_entry.get(), self.item_aisle_entry.get(), self.item_shelf_entry.get())))
         add.grid(row=5, column=1)
 
-    def add_too_list(self):
-        self.stock_list.append(ItemWidget(self.scrollpage, self.item_name_entry.get(), self.item_count_entry.get(), self.item_ref_code_entry.get(), self.item_aisle_entry.get(), self.item_shelf_entry.get()))
+    def reload_list(self):
+        for item in self.items_list:
+            item.item_frame.pack()
 
-    def reload(self):
-        rowcount=0
-        for item in self.stock_list:
-            self.widget = Frame(self.scrollpage)
-            self.name_label = Label(self.widget, text=item.name, font=style.widget_font, bg=style.secondary, fg=style.text_color, width=int((window_width * 0.002)))
-            self.count_label = Label(self.widget, text=item.count, font=style.widget_font, bg=style.secondary, fg=style.text_color, width=int((window_width * 0.002)))
-            self.ref_code_label = Label(self.widget, text=item.ref_code, font=style.widget_font, bg=style.secondary, fg=style.text_color, width=int((window_width * 0.002)))
-            self.aisle_label = Label(self.widget, text=item.aisle, font=style.widget_font, bg=style.secondary, fg=style.text_color, width=int((window_width * 0.002)))
-            self.shelf_label = Label(self.widget, text=item.shelf, font=style.widget_font, bg=style.secondary, fg=style.text_color, width=int((window_width * 0.002)))
-            
-            self.name_label.grid(row=rowcount, column=0)
-            self.count_label.grid(row=rowcount, column=1)
-            self.ref_code_label.grid(row=rowcount, column=2)
-            self.aisle_label.grid(row=rowcount, column=3)
-            self.shelf_label.grid(row=rowcount, column=4)
-            rowcount+=1
+    def add_shipment(self):
+        index=0
+        for search in self.items_list:
+            if search.name == self.shipment_title_e.get():
+                cont = self.count
+                cont = int(cont)
+                cont += int(self.shipment_amount_e.get())
+                print(search.count)
+            index+=1
 
-            self.widget.pack(fill='x')
-
-            
-
-            
 
 """Main routine"""
 if __name__ == "__main__":
@@ -224,19 +257,5 @@ if __name__ == "__main__":
     root = Tk()
     root.title("Warehouse Software")
     root.configure(background=style.background)
-
-    #Get window size
-    screen_width = root.winfo_screenwidth()
-    screen_height = root.winfo_screenheight()
-    #Define window size
-    window_width = int(screen_width * 0.8) #80% of window width
-    window_height = int(screen_height * 0.8) #80% of window height
-    #Calculate window position to position it in the center of the screen
-    window_x = (screen_width - window_width) // 2
-    window_y = (screen_height - window_height) // 2
-    #Apply window sizing
-    root.geometry(f"{window_width}x{window_height}+{window_x}+{window_y}")
-    print(window_width*0.2)
-
     instance=Gui(root)
     root.mainloop()
