@@ -26,19 +26,19 @@ class ItemWidget:
     def __init__(self, frame, name, count, ref_code, aisle, shelf):
         self.frame = frame
         self.name = name
-        self.count = count
+        self.count = int(count)
         self.ref_code = ref_code
         self.aisle = aisle
         self.shelf = shelf
 
         self.item_frame = Frame(self.frame, bg=style.primary)
-        name_label = Label(self.item_frame, text=self.name, font=style.default_font, fg=style.text_color, bg=style.primary, width=20)
-        count_label = Label(self.item_frame, text=self.count, font=style.default_font, fg=style.text_color, bg=style.primary, width=20)
+        self.name_label = Label(self.item_frame, text=self.name, font=style.default_font, fg=style.text_color, bg=style.primary, width=20)
+        self.count_label = Label(self.item_frame, text=self.count, font=style.default_font, fg=style.text_color, bg=style.primary, width=20)
         ref_code_label = Label(self.item_frame, text=self.ref_code, font=style.default_font, fg=style.text_color, bg=style.primary, width=20)
         aisle_label = Label(self.item_frame, text=self.aisle, font=style.default_font, fg=style.text_color, bg=style.primary, width=20)
         shelf_label = Label(self.item_frame, text=self.shelf, font=style.default_font, fg=style.text_color, bg=style.primary, width=20)
-        name_label.grid(row=0, column=0, padx=5, pady=2)
-        count_label.grid(row=0, column=1, padx=5, pady=2)
+        self.name_label.grid(row=0, column=0, padx=5, pady=2)
+        self.count_label.grid(row=0, column=1, padx=5, pady=2)
         ref_code_label.grid(row=0, column=2, padx=5, pady=2)
         aisle_label.grid(row=0, column=3, padx=5, pady=2)
         shelf_label.grid(row=0, column=4, padx=5, pady=2)
@@ -233,22 +233,31 @@ class Gui:
         item_ref_code.grid(row=4, column=0)
         self.item_ref_code_entry.grid(row=4, column=1)
 
-        add = Button(popup, text="Add +", command=self.items_list.append(ItemWidget(self.items_frame, self.item_name_entry.get(), self.item_count_entry.get(), self.item_ref_code_entry.get(), self.item_aisle_entry.get(), self.item_shelf_entry.get())))
+        add = Button(popup, text="Add +", command=self.add_item)
         add.grid(row=5, column=1)
 
+    def add_item(self):
+        self.items_list.append(ItemWidget(self.items_frame, self.item_name_entry.get(), self.item_count_entry.get(), self.item_ref_code_entry.get(), self.item_aisle_entry.get(), self.item_shelf_entry.get()))
+
     def reload_list(self):
+        for item in self.items_list:
+            item.item_frame.forget()
         for item in self.items_list:
             item.item_frame.pack()
 
     def add_shipment(self):
-        index=0
+        valid = False
         for search in self.items_list:
             if search.name == self.shipment_title_e.get():
-                cont = self.count
+                cont = search.count
                 cont = int(cont)
                 cont += int(self.shipment_amount_e.get())
-                print(search.count)
-            index+=1
+                search.count = cont
+                search.count_label.configure(text=cont)
+                valid = True
+        if valid == False:
+            messagebox.showerror("Error", "There is no item called ({})".format(self.shipment_title_e.get()))
+        
 
 
 """Main routine"""
