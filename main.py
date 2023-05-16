@@ -8,7 +8,7 @@ class Style:
         self.default_font = ("Arial", 10, "normal")
         self.title_font = ("Roboto", 30, "bold")
         self.button_font = ("Roboto", 10, "bold")
-        self.widget_font = ("Roboto", 30, "normal")
+        self.widget_font = ("Roboto", 15, "normal")
 
         #Dark mode
         self.primary = "#d2d3db"
@@ -105,7 +105,7 @@ class Gui:
         search_bar = Entry(search_bar_frame, width=30)
         search_bar.grid(row=0, column=0)
         #Search button
-        search_button = Button(search_bar_frame, text="Search", font=style.button_font, bg=style.accent, fg=style.text_color)
+        search_button = Button(search_bar_frame, text="Search", font=style.button_font, bg=style.accent, fg=style.text_color, command=self.search)
         search_button.grid(row=0,column=1, padx=5)
 
         """List frame"""
@@ -147,6 +147,44 @@ class Gui:
         """------Orders page------"""
         #Create page frame
         self.orders_page = Frame(main)
+        orders_tab = Frame(self.orders_page, bg=style.primary, 
+                             highlightbackground=style.border_color, highlightthickness=1, bd=0, relief="solid")
+        orders_tab.pack(fill='x')
+        orders_title = Label(orders_tab, text="Incoming Orders: ", fg=style.title_color, font=style.title_font, bg=style.primary)
+        orders_title.grid(row=0, column=0)
+        
+        #Create scrollable frame
+        orders_list = Frame(self.orders_page)
+        orders_list.pack()
+        self.orders_scrollpage = Canvas(orders_list, height=200, bg=style.background)
+        scrollbar_orders = Scrollbar(orders_list, orient="vertical", command=self.orders_scrollpage.yview)
+        self.orders_scrollpage.configure(yscrollcommand=scrollbar.set)
+        scrollbar_orders.pack(side='right', fill='y')
+        self.orders_scrollpage.pack(fill='x', expand=True)
+        
+        #Create a frame within the canvas to put the items into
+        self.orders_item_frame = Frame(self.orders_scrollpage)
+        self.orders_scrollpage.create_window((0, 0), window=self.orders_item_frame, anchor="nw")
+
+        # Configure the canvas to fit the content and enable scrolling
+        orders_list.update_idletasks()  # Update the frame to get accurate width and height
+        self.orders_scrollpage.config(scrollregion=self.orders_scrollpage.bbox("all"))
+
+        #Test label
+        widget = Frame(self.orders_item_frame, bg=style.primary)
+        widget.pack()
+        info = Frame(widget, bg=style.primary)
+        info.grid(row=0, column=0, padx=2, pady=2)
+        pn_name = Label(info, text="Postal number: 1746", font=style.default_font, bg=style.primary, fg=style.text_color)
+        od_name = Label(info, text="Date ordered: 16/2/19", font=style.default_font, bg=style.primary, fg=style.text_color)
+        pn_name.grid(row=0, column=0, padx=2, pady=2)
+        od_name.grid(row=1, column=0, padx=2, pady=2)
+        it_name = Label(widget, text="Item: thing", font=style.widget_font, fg=style.text_color, bg=style.primary)
+        cnt_name = Label(widget, text="Amount: 5", font=style.widget_font, fg=style.text_color, bg=style.primary)
+        status_name = Label(widget, text="Status: shipped")
+        status_name.grid(row=0, column=3)
+        cnt_name.grid(row=0, column=1)
+        it_name.grid(row=0, column=2)
 
 
 
@@ -238,10 +276,17 @@ class Gui:
         add = Button(popup, text="Add +", command=self.add_item)
         add.grid(row=5, column=1)
 
+    def search(self):
+        y = self.v
+        for item in self.items_list:
+            print(item.self.v)
+
+
+
     def add_item(self):
-        if self.validate_str(self.item_name_entry.get()) == False:
+        if self.validate_str(self.item_name_entry.get()) == False: 
             messagebox.showerror("Entry error", "The name of your item cannot contain digits.")
-        if self.validate_int(self.item_count_entry.get()) == False:
+        elif self.validate_int(self.item_count_entry.get()) == False:
             messagebox.showerror("Entry error", "Your item count cannot contain letters.")
         else:
             self.items_list.append(ItemWidget(self.items_frame, self.item_name_entry.get(), self.item_count_entry.get(), self.item_ref_code_entry.get(), self.item_aisle_entry.get(), self.item_shelf_entry.get()))
@@ -267,6 +312,8 @@ class Gui:
                 cont += int(self.shipment_amount_e.get())
                 search.count = cont
                 search.count_label.configure(text=cont)
+                self.shipment_title_e.delete()
+                self.shipment_amount_e.delete()
                 valid = True
         if valid == False:
             messagebox.showerror("Error", "There is no item called ({})".format(self.shipment_title_e.get()))
