@@ -26,7 +26,7 @@ class ItemWidget:
     def __init__(self, frame, name, count, ref_code, aisle, shelf):
         self.frame = frame
         self.name = name
-        self.count = int(count)
+        self.count = count
         self.ref_code = ref_code
         self.aisle = aisle
         self.shelf = shelf
@@ -149,10 +149,10 @@ class Gui:
         self.orders_page = Frame(main)
 
 
+
         """------Shipments page------"""
         #Create page frame and Title
         self.shipments_page = Frame(main, bg=style.background)
-        self.shipments_page.pack()
         enter_page = Frame(self.shipments_page, bg=style.background)
         add_shipment_l = Label(self.shipments_page, text="Add new Shipment", font=style.title_font, fg=style.title_color, bg=style.background)
         add_shipment_l.pack(padx=5, pady=2)
@@ -178,6 +178,8 @@ class Gui:
         self.settings_page = Frame(main)
 
 
+        #Pack stock page to start with
+        self.stock_page.pack()
 
     def goto_stock(self):
         self.orders_page.forget()
@@ -237,7 +239,18 @@ class Gui:
         add.grid(row=5, column=1)
 
     def add_item(self):
-        self.items_list.append(ItemWidget(self.items_frame, self.item_name_entry.get(), self.item_count_entry.get(), self.item_ref_code_entry.get(), self.item_aisle_entry.get(), self.item_shelf_entry.get()))
+        if self.validate_str(self.item_name_entry.get()) == False:
+            messagebox.showerror("Entry error", "The name of your item cannot contain digits.")
+        if self.validate_int(self.item_count_entry.get()) == False:
+            messagebox.showerror("Entry error", "Your item count cannot contain letters.")
+        else:
+            self.items_list.append(ItemWidget(self.items_frame, self.item_name_entry.get(), self.item_count_entry.get(), self.item_ref_code_entry.get(), self.item_aisle_entry.get(), self.item_shelf_entry.get()))
+            self.item_name_entry.delete(first=0, last=100)
+            self.item_aisle_entry.delete(first=0, last=100)
+            self.item_count_entry.delete(first=0, last=100)
+            self.item_shelf_entry.delete(first=0, last=100)
+            self.item_ref_code_entry.delete(first=0, last=100)
+            self.reload_list()
 
     def reload_list(self):
         for item in self.items_list:
@@ -257,7 +270,22 @@ class Gui:
                 valid = True
         if valid == False:
             messagebox.showerror("Error", "There is no item called ({})".format(self.shipment_title_e.get()))
-        
+
+    def validate_int(self, enter):
+            try:
+                int(enter)
+            except ValueError:
+                return False
+            
+    def validate_str(self, enter):
+        for i in enter:
+            try:
+                int(i)
+                return(False)
+            except:
+                print(i)
+        return(True)
+
 
 
 """Main routine"""
