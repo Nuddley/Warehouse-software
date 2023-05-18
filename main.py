@@ -12,14 +12,14 @@ class Style:
         self.title_font = ("Roboto", 30, "bold")
         self.button_font = ("Roboto", 10, "bold")
         self.widget_font = ("Roboto", 15, "normal")
-        self.primary = "#d2d3db"
-        self.secondary = "#9394a5"
-        self.text_color = "black"
-        self.accent = "#b8b8b8"
-        self.background = "#fafafa"
-        self.title_color = "#484b6a"
-        self.border_color = "#484b6a"
-        self.accent2 = "#32a852"
+        self.primary = "#d2d3db" # Light gray with a hint of blue
+        self.secondary = "#9394a5" # Slightly darker gray with a hint of blue
+        self.text_color = "black" # Black
+        self.accent = "#b8b8b8" # Darkish gray
+        self.background = "#fafafa" # White
+        self.title_color = "#484b6a" # Dark pastel blue
+        self.border_color = "#666666" # Dark gray
+        self.accent2 = "#32a852" # Light pastel green
 
 
 class ItemWidget:
@@ -165,36 +165,36 @@ class Gui:
 
     def new_item(self):
         """Creates a popup window to enter data in and create new items."""
-        popup = Toplevel()
+        popup = Toplevel(bg=style.primary)
         popup.title("Add new item")
-        popup.geometry("175x175")
+        popup.geometry("175x130")
 
-        item_name = Label(popup, text="Item Name")
+        item_name = Label(popup, text="Item Name", font=style.default_font, fg=style.text_color, bg=style.primary)
         self.item_name_entry = Entry(popup, width=10)
         item_name.grid(row=0, column=0)
         self.item_name_entry.grid(row=1, column=0)
 
-        item_count = Label(popup, text="Current count")
+        item_count = Label(popup, text="Current count", font=style.default_font, fg=style.text_color, bg=style.primary)
         self.item_count_entry = Entry(popup, width=10)
         item_count.grid(row=0, column=1)
         self.item_count_entry.grid(row=1, column=1)
 
-        item_aisle = Label(popup, text="Aisle")
+        item_aisle = Label(popup, text="Aisle", font=style.default_font, fg=style.text_color, bg=style.primary)
         self.item_aisle_entry = Entry(popup, width=10)
         item_aisle.grid(row=2, column=0)
         self.item_aisle_entry.grid(row=3, column=0)
 
-        item_shelf = Label(popup, text="Shelf")
+        item_shelf = Label(popup, text="Shelf", font=style.default_font, fg=style.text_color, bg=style.primary)
         self.item_shelf_entry = Entry(popup, width=10)
         item_shelf.grid(row=2, column=1)
         self.item_shelf_entry.grid(row=3, column=1)
 
-        item_ref_code = Label(popup, text="Refrence code")
+        item_ref_code = Label(popup, text="Refrence code", font=style.default_font, fg=style.text_color, bg=style.primary)
         self.item_ref_code_entry = Entry(popup, width=10)
         item_ref_code.grid(row=4, column=0)
         self.item_ref_code_entry.grid(row=4, column=1)
 
-        add = Button(popup, text="Add +", command=self.add_item)
+        add = Button(popup, text="Add +", command=self.add_item, font=style.button_font, bg=style.accent, fg=style.text_color)
         add.grid(row=5, column=1)
 
     def new_shipment(self):
@@ -211,11 +211,20 @@ class Gui:
         """Sets all items in the list to gray, then searches for items that match the search parameters and sets those items backgrounds to green."""
         for item in self.items_list:
             item.item_frame.configure(bg=style.primary)
+            item.name_label.configure(bg=style.primary, fg=style.text_color)
+            item.ref_code_label.configure(bg=style.primary, fg=style.text_color)
+            item.count_label.configure(bg=style.primary, fg=style.text_color)
+            item.aisle_label.configure(bg=style.primary, fg=style.text_color)
+            item.shelf_label.configure(bg=style.primary, fg=style.text_color)
         for item in self.items_list:
             var_list = [item.name, item.count, item.ref_code, item.aisle, item.shelf]
-            print(var_list[self.rb_value.get()])
             if self.search_bar.get() == var_list[self.rb_value.get()]:
                 item.item_frame.configure(bg=style.accent2)
+                item.name_label.configure(bg=style.accent2, fg=style.primary)
+                item.ref_code_label.configure(bg=style.accent2, fg=style.primary)
+                item.count_label.configure(bg=style.accent2, fg=style.primary)
+                item.aisle_label.configure(bg=style.accent2, fg=style.primary)
+                item.shelf_label.configure(bg=style.accent2, fg=style.primary)
 
     def add_item(self):
         """validates the inputs and then creates an instance of the ItemWidget subclass and appends it to a list, then clears the entrys."""
@@ -245,23 +254,26 @@ class Gui:
     def add_shipment(self):
         """Searches for a stock item that matches the inputed parameter and then adds the amount to the items stock."""
         valid = False
-        for search in self.items_list:
-            if search.name == self.shipment_title_e.get():
-                cont = search.count
-                cont = int(cont)
-                cont += int(self.shipment_amount_e.get())
-                search.count = cont
-                search.count_label.configure(text=cont)
-                self.shipment_title_e.delete(first=0, last=100)
-                self.shipment_amount_e.delete(first=0, last=100)
-                valid = True
-        if valid is False:
-            messagebox.showerror("Error", F"There is no item called {self.shipment_title_e.get()}")
+        for item in self.items_list:
+            if item.name == self.shipment_title_e.get():
+                if self.validate_int(self.shipment_amount_e.get()) is True:
+                    cont = item.count
+                    cont = int(cont)
+                    cont += int(self.shipment_amount_e.get())
+                    item.count = cont
+                    item.count_label.configure(text=cont)
+                    self.shipment_title_e.delete(first=0, last=100)
+                    self.shipment_amount_e.delete(first=0, last=100)
+                elif self.validate_int(self.shipment_amount_e.get()) is False:
+                    messagebox.showerror("Error", "The amount entered cannot contain letters or special characters.")
+            else:
+                messagebox.showerror("Error", F"There is no item called {self.shipment_title_e.get()}.")
 
     def validate_int(self, enter):
         """Function to validate an integer"""
         try:
             int(enter)
+            return True
         except ValueError:
             return False
 
@@ -272,7 +284,7 @@ class Gui:
                 int(i)
                 return False
             except ValueError:
-                print(i)
+                i
         return True
 
 
