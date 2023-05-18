@@ -72,9 +72,6 @@ class Gui:
         # Add stock item button
         new_button = Button(stock_search, text="Add new stock", font=style.button_font, bg=style.accent, fg=style.text_color, command=self.new_item)
         new_button.grid(row=0, column=1, padx=5, pady=2, )
-        # Add shipment button
-        shipments = Button(stock_search, text="Add Shipment", font=style.button_font, bg=style.accent, fg=style.text_color, command=self.new_shipment)
-        shipments.grid(row=0, column=2, padx=5, pady=2)
 
         # Radio button for which value to search
         radiobutton_frame = Frame(stock_search, bg=style.secondary)
@@ -138,31 +135,6 @@ class Gui:
         self.items_frame.update_idletasks()  # Update the frame to get accurate width and height
         self.canvas.config(scrollregion=self.canvas.bbox("all"))
 
-        # Shipments page
-        # Create page frame and Title
-        self.shipments_page = Frame(self.main, bg=style.background)
-        enter_page = Frame(self.shipments_page, bg=style.background)
-        add_shipment_l = Label(self.shipments_page, text="Add new Shipment", font=style.title_font, fg=style.title_color, bg=style.background)
-        add_shipment_l.pack(padx=5, pady=2)
-        enter_page.pack()
-
-        # Entrys and labels
-        shipment_title_l = Label(enter_page, text="In stock item name", font=style.default_font, fg=style.text_color, bg=style.background)
-        self.shipment_title_e = Entry(enter_page)
-        shipment_title_l.grid(row=0, column=0, padx=5, pady=2)
-        self.shipment_title_e.grid(row=1, column=0, padx=5, pady=2)
-        shipment_amount_l = Label(enter_page, text="Enter amount", font=style.default_font, fg=style.text_color, bg=style.background)
-        self.shipment_amount_e = Entry(enter_page)
-        shipment_amount_l.grid(row=0, column=1, padx=5, pady=2)
-        self.shipment_amount_e.grid(row=1, column=1, padx=5, pady=2)
-
-        # Add shipment button
-        shipment_add_b = Button(enter_page, text="Add", font=style.button_font, fg=style.text_color, bg=style.primary, command=self.add_shipment)
-        shipment_add_b.grid(row=2, column=1, padx=5, pady=2)
-        # Back button
-        go_back = Button(enter_page, text="Back", font=style.button_font, fg=style.text_color, bg=style.primary, command=self.load_stock)
-        go_back.grid(row=2, column=0, padx=5, pady=2)
-
     def new_item(self):
         """Creates a popup window to enter data in and create new items."""
         popup = Toplevel(bg=style.primary)
@@ -196,16 +168,6 @@ class Gui:
 
         add = Button(popup, text="Add +", command=self.add_item, font=style.button_font, bg=style.accent, fg=style.text_color)
         add.grid(row=5, column=1)
-
-    def new_shipment(self):
-        """Goto shipments page"""
-        self.stock_page.forget()
-        self.shipments_page.pack()
-
-    def load_stock(self):
-        """Goto stock page"""
-        self.shipments_page.forget()
-        self.stock_page.pack()
 
     def search(self):
         """Sets all items in the list to gray, then searches for items that match the search parameters and sets those items backgrounds to green."""
@@ -255,23 +217,6 @@ class Gui:
         self.canvas.config(scrollregion=self.canvas.bbox("all"))
         self.main.forget()
         self.main.pack()
-
-    def add_shipment(self):
-        """Searches for a stock item that matches the inputed parameter and then adds the amount to the items stock."""
-        if self.validate_int(self.shipment_amount_e.get(), 999999) is True:
-                if self.validate_str(self.shipment_title_e.get(), 20) is True:
-                    for item in self.items_list:
-                        item_count = item.count
-                        e_count = self.shipment_amount_e.get()
-                        fnl_count = int(item_count) + int(e_count)
-                        item.count_label.configure(text=fnl_count)
-                        self.shipment_title_e.delete(first=0, last=100)
-                        self.shipment_amount_e.delete(first=0, last=100)
-                        break
-                elif self.validate_str(self.shipment_title_e.get(), 20) is False:
-                    messagebox.showerror("Entry error", F"There is no item called {self.shipment_title_e.get()}.")
-        elif self.validate_int(self.shipment_amount_e.get(), 999999) is False:
-            messagebox.showerror("Entry error", "Your amount must be less than 1,000,000 and cant contain any letters or special characters.")
 
     def validate_int(self, enter, limit):
         """Function to validate an integer"""
