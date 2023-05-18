@@ -167,7 +167,7 @@ class Gui:
         """Creates a popup window to enter data in and create new items."""
         popup = Toplevel(bg=style.primary)
         popup.title("Add new item")
-        popup.geometry("175x130")
+        popup.geometry("175x150")
 
         item_name = Label(popup, text="Item Name", font=style.default_font, fg=style.text_color, bg=style.primary)
         self.item_name_entry = Entry(popup, width=10)
@@ -209,29 +209,34 @@ class Gui:
 
     def search(self):
         """Sets all items in the list to gray, then searches for items that match the search parameters and sets those items backgrounds to green."""
-        for item in self.items_list:
-            item.item_frame.configure(bg=style.primary)
-            item.name_label.configure(bg=style.primary, fg=style.text_color)
-            item.ref_code_label.configure(bg=style.primary, fg=style.text_color)
-            item.count_label.configure(bg=style.primary, fg=style.text_color)
-            item.aisle_label.configure(bg=style.primary, fg=style.text_color)
-            item.shelf_label.configure(bg=style.primary, fg=style.text_color)
-        for item in self.items_list:
-            var_list = [item.name, item.count, item.ref_code, item.aisle, item.shelf]
-            if self.search_bar.get() == var_list[self.rb_value.get()]:
-                item.item_frame.configure(bg=style.accent2)
-                item.name_label.configure(bg=style.accent2, fg=style.primary)
-                item.ref_code_label.configure(bg=style.accent2, fg=style.primary)
-                item.count_label.configure(bg=style.accent2, fg=style.primary)
-                item.aisle_label.configure(bg=style.accent2, fg=style.primary)
-                item.shelf_label.configure(bg=style.accent2, fg=style.primary)
+        if len(self.search_bar.get()) > 20:
+            messagebox.showerror("Entry error", "Your search parameter must be less than 20 characters.")
+        elif len(self.search_bar.get()) <= 20:
+            for item in self.items_list:
+                item.item_frame.configure(bg=style.primary)
+                item.name_label.configure(bg=style.primary, fg=style.text_color)
+                item.ref_code_label.configure(bg=style.primary, fg=style.text_color)
+                item.count_label.configure(bg=style.primary, fg=style.text_color)
+                item.aisle_label.configure(bg=style.primary, fg=style.text_color)
+                item.shelf_label.configure(bg=style.primary, fg=style.text_color)
+            for item in self.items_list:
+                var_list = [item.name, item.count, item.ref_code, item.aisle, item.shelf]
+                if self.search_bar.get() == var_list[self.rb_value.get()]:
+                    item.item_frame.configure(bg=style.accent2)
+                    item.name_label.configure(bg=style.accent2, fg=style.primary)
+                    item.ref_code_label.configure(bg=style.accent2, fg=style.primary)
+                    item.count_label.configure(bg=style.accent2, fg=style.primary)
+                    item.aisle_label.configure(bg=style.accent2, fg=style.primary)
+                    item.shelf_label.configure(bg=style.accent2, fg=style.primary)
 
     def add_item(self):
         """validates the inputs and then creates an instance of the ItemWidget subclass and appends it to a list, then clears the entrys."""
-        if self.validate_str(self.item_name_entry.get()) is False:
-            messagebox.showerror("Entry error", "The name of your item cannot contain digits.")
-        elif self.validate_int(self.item_count_entry.get()) is False:
-            messagebox.showerror("Entry error", "Your item count cannot contain letters.")
+        if self.validate_str(self.item_name_entry.get(), 20) is False:
+            messagebox.showerror("Entry error", "The name of your item cannot contain digits or must be shortened to less than 20 characters.")
+        elif self.validate_int(self.item_count_entry.get(), 999999) is False:
+            messagebox.showerror("Entry error", "Your item count cannot contain letters and must be less than 1,000,000")
+        elif len(self.item_ref_code_entry.get()) > 6:
+            messagebox.showerror("Entry error", "Your refrence code must be 6 digits or less.")
         else:
             self.items_list.append(ItemWidget(self.items_frame, self.item_name_entry.get(), self.item_count_entry.get(), self.item_ref_code_entry.get(), self.item_aisle_entry.get(), self.item_shelf_entry.get()))
             self.item_name_entry.delete(first=0, last=100)
@@ -253,39 +258,44 @@ class Gui:
 
     def add_shipment(self):
         """Searches for a stock item that matches the inputed parameter and then adds the amount to the items stock."""
-        valid = False
-        for item in self.items_list:
-            if item.name == self.shipment_title_e.get():
-                if self.validate_int(self.shipment_amount_e.get()) is True:
-                    cont = item.count
-                    cont = int(cont)
-                    cont += int(self.shipment_amount_e.get())
-                    item.count = cont
-                    item.count_label.configure(text=cont)
-                    self.shipment_title_e.delete(first=0, last=100)
-                    self.shipment_amount_e.delete(first=0, last=100)
-                elif self.validate_int(self.shipment_amount_e.get()) is False:
-                    messagebox.showerror("Error", "The amount entered cannot contain letters or special characters.")
-            else:
-                messagebox.showerror("Error", F"There is no item called {self.shipment_title_e.get()}.")
+        if self.validate_int(self.shipment_amount_e.get(), 999999) is True:
+                if self.validate_str(self.shipment_title_e.get(), 20) is True:
+                    for item in self.items_list:
+                        item_count = item.count
+                        e_count = self.shipment_amount_e.get()
+                        fnl_count = int(item_count) + int(e_count)
+                        item.count_label.configure(text=fnl_count)
+                        self.shipment_title_e.delete(first=0, last=100)
+                        self.shipment_amount_e.delete(first=0, last=100)
+                        break
+                elif self.validate_str(self.shipment_title_e.get(), 20) is False:
+                    messagebox.showerror("Entry error", F"There is no item called {self.shipment_title_e.get()}.")
+        elif self.validate_int(self.shipment_amount_e.get(), 999999) is False:
+            messagebox.showerror("Entry error", "Your amount must be less than 1,000,000 and cant contain any letters or special characters.")
 
-    def validate_int(self, enter):
+    def validate_int(self, enter, limit):
         """Function to validate an integer"""
         try:
             int(enter)
-            return True
+            if int(enter) > limit:
+                return False
+            elif int(enter) <= limit:
+                return True
         except ValueError:
             return False
 
-    def validate_str(self, enter):
+    def validate_str(self, enter, limit):
         """Function to validate a string"""
-        for i in enter:
-            try:
-                int(i)
-                return False
-            except ValueError:
-                i
-        return True
+        if len(enter) > limit:
+            return False
+        elif len(enter) <= limit:
+            for i in enter:
+                try:
+                    int(i)
+                    return False
+                except ValueError:
+                    i
+            return True
 
 
 if __name__ == "__main__":
