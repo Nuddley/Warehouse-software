@@ -1,3 +1,4 @@
+"""Test file to open a tkinter window that is scrollable."""
 import tkinter as tk
 
 root = tk.Tk()

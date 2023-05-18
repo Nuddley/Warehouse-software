@@ -15,8 +15,8 @@ class Style:
 class Item:
     def __init__(self, frame, value1, value2):
         self.goto_frame = frame
-        self.value11 = value1
-        self.value22 = value2
+        self.rb_valuealue11 = value1
+        self.rb_valuealue22 = value2
 
         self.widget = Label(self.goto_frame, text=("Name: {} Year group: {}".format(value1, value2)), relief=SOLID, borderwidth=2, width=20, height=1)
         self.widget.configure(bg=style.secondary, fg=style.text_color)
@@ -39,8 +39,8 @@ class Gui:
         
         #Testing data, actual data would be gathered with entrys.
         self.data.append(Item(self.list_frame, "Noah", "3"))
-        self.data.append(Item(self.list_frame,"Nick", "1"))
-        self.data.append(Item(self.list_frame,"Jack", "2"))
+        self.data.append(Item(self.list_frame, "Nick", "1"))
+        self.data.append(Item(self.list_frame, "Jack", "2"))
         self.pack_list()
 
     """Function to pack the list of items. Only prints in order items were appended in."""
