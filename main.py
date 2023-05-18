@@ -18,6 +18,7 @@ class Style:
         self.background = "#fafafa"
         self.title_color = "#484b6a"
         self.border_color = "#484b6a"
+        self.accent2 = "#32a852"
         #Light mode
 
 
@@ -34,14 +35,14 @@ class ItemWidget:
         self.item_frame = Frame(self.frame, bg=style.primary)
         self.name_label = Label(self.item_frame, text=self.name, font=style.default_font, fg=style.text_color, bg=style.primary, width=20)
         self.count_label = Label(self.item_frame, text=self.count, font=style.default_font, fg=style.text_color, bg=style.primary, width=20)
-        ref_code_label = Label(self.item_frame, text=self.ref_code, font=style.default_font, fg=style.text_color, bg=style.primary, width=20)
-        aisle_label = Label(self.item_frame, text=self.aisle, font=style.default_font, fg=style.text_color, bg=style.primary, width=20)
-        shelf_label = Label(self.item_frame, text=self.shelf, font=style.default_font, fg=style.text_color, bg=style.primary, width=20)
+        self.ref_code_label = Label(self.item_frame, text=self.ref_code, font=style.default_font, fg=style.text_color, bg=style.primary, width=20)
+        self.aisle_label = Label(self.item_frame, text=self.aisle, font=style.default_font, fg=style.text_color, bg=style.primary, width=20)
+        self.shelf_label = Label(self.item_frame, text=self.shelf, font=style.default_font, fg=style.text_color, bg=style.primary, width=20)
         self.name_label.grid(row=0, column=0, padx=5, pady=2)
         self.count_label.grid(row=0, column=1, padx=5, pady=2)
-        ref_code_label.grid(row=0, column=2, padx=5, pady=2)
-        aisle_label.grid(row=0, column=3, padx=5, pady=2)
-        shelf_label.grid(row=0, column=4, padx=5, pady=2)
+        self.ref_code_label.grid(row=0, column=2, padx=5, pady=2)
+        self.aisle_label.grid(row=0, column=3, padx=5, pady=2)
+        self.shelf_label.grid(row=0, column=4, padx=5, pady=2)
 
 """Main GUI class"""
 class Gui:
@@ -56,13 +57,13 @@ class Gui:
         """------Nav bar------"""
         #Create and grid Buttons
         stock = Button(navbar, text="Stock", font=style.button_font, height=1, bg=style.accent, fg=style.text_color, command=self.goto_stock)
-        orders = Button(navbar, text="Orders", font=style.button_font, height=1, bg=style.accent, fg=style.text_color, command=self.goto_orders)
+        #orders = Button(navbar, text="Orders", font=style.button_font, height=1, bg=style.accent, fg=style.text_color, command=self.goto_orders)
         shipments = Button(navbar, text="Shipments", font=style.button_font, height=1, bg=style.accent, fg=style.text_color, command=self.goto_shipments)
-        settings = Button(navbar, text="Settings", font=style.button_font, height=1, bg=style.accent, fg=style.text_color, command=self.goto_settings)
+        #settings = Button(navbar, text="Settings", font=style.button_font, height=1, bg=style.accent, fg=style.text_color, command=self.goto_settings)
         stock.grid(padx=5, pady=2, row=0, column=0)
-        orders.grid(padx=5, pady=2, row=0, column=1)
+        #orders.grid(padx=5, pady=2, row=0, column=1)
         shipments.grid(padx=6, pady=2, row=0, column=2)
-        settings.grid(padx=5, pady=2, row=0, column=3)
+        #settings.grid(padx=5, pady=2, row=0, column=3)
 
         """------Stock Page-------"""
         #Create stock page frame
@@ -85,12 +86,12 @@ class Gui:
         radiobutton_frame = Frame(stock_search, bg=style.primary)
         radiobutton_frame.grid(row=0, column=2, padx=5, pady=2,)
         self.v = IntVar()
-        self.v.set(1)
-        search_name = Radiobutton(radiobutton_frame, variable=self.v, value="name", text="Name", bg=style.primary, fg=style.text_color, font=style.default_font)
-        search_count = Radiobutton(radiobutton_frame, variable=self.v, value="count", text="Code", bg=style.primary, fg=style.text_color, font=style.default_font)
-        search_ref_code = Radiobutton(radiobutton_frame, variable=self.v, value="ref_code", text="Refrence Code", bg=style.primary, fg=style.text_color, font=style.default_font)
-        search_aisle = Radiobutton(radiobutton_frame, variable=self.v, value="aisle", text="Aisle", bg=style.primary, fg=style.text_color, font=style.default_font)
-        search_shelf = Radiobutton(radiobutton_frame, variable=self.v, value="shelf", text="Shelf", bg=style.primary, fg=style.text_color, font=style.default_font)
+        self.v.set(0)
+        search_name = Radiobutton(radiobutton_frame, variable=self.v, value=0, text="Name", bg=style.primary, fg=style.text_color, font=style.default_font)
+        search_count = Radiobutton(radiobutton_frame, variable=self.v, value=1, text="Count", bg=style.primary, fg=style.text_color, font=style.default_font)
+        search_ref_code = Radiobutton(radiobutton_frame, variable=self.v, value=2, text="Refrence Code", bg=style.primary, fg=style.text_color, font=style.default_font)
+        search_aisle = Radiobutton(radiobutton_frame, variable=self.v, value=3, text="Aisle", bg=style.primary, fg=style.text_color, font=style.default_font)
+        search_shelf = Radiobutton(radiobutton_frame, variable=self.v, value=4, text="Shelf", bg=style.primary, fg=style.text_color, font=style.default_font)
 
         #Grid radio buttons
         search_name.grid(row=0, column=0)
@@ -102,8 +103,8 @@ class Gui:
         #Search bar frame
         search_bar_frame = Frame(stock_search, bg=style.primary)
         search_bar_frame.grid(row=0, column=3, padx=5, pady=2)
-        search_bar = Entry(search_bar_frame, width=30)
-        search_bar.grid(row=0, column=0)
+        self.search_bar = Entry(search_bar_frame, width=30)
+        self.search_bar.grid(row=0, column=0)
         #Search button
         search_button = Button(search_bar_frame, text="Search", font=style.button_font, bg=style.accent, fg=style.text_color, command=self.search)
         search_button.grid(row=0,column=1, padx=5)
@@ -128,23 +129,23 @@ class Gui:
         aisle_label.grid(row=0, column=3, padx=5, pady=2)
         shelf_label.grid(row=0, column=4, padx=5, pady=2)
 
-        #Create scrollable canvas
-        self.scrollpage = Canvas(stock_items, height=200, bg=style.background)
-        scrollbar = Scrollbar(stock_items, orient="vertical", command=self.scrollpage.yview)
-        self.scrollpage.configure(yscrollcommand=scrollbar.set)
-        scrollbar.pack(side='right', fill='y')
-        self.scrollpage.pack(fill="x", expand=True)
+        # Create a Canvas widget with a vertical Scrollbar
+        self.canvas = Canvas(stock_items, height=200, bg=style.background)
+        scrollbar = Scrollbar(stock_items, orient="vertical", command=self.canvas.yview)
+        self.canvas.configure(yscrollcommand=scrollbar.set)
+        scrollbar.pack(side="right", fill="y")
+        self.canvas.pack(side="left", fill="both", expand=True)
 
-        #Create a frame within the canvas to put the items into
-        self.items_frame = Frame(self.scrollpage)
-        self.scrollpage.create_window((0, 0), window=self.items_frame, anchor="nw")
+        # Create a frame inside the canvas to hold the content
+        self.items_frame = Frame(self.canvas)
+        self.canvas.create_window((0, 0), window=self.items_frame, anchor="nw")
 
         # Configure the canvas to fit the content and enable scrolling
-        stock_items.update_idletasks()  # Update the frame to get accurate width and height
-        self.scrollpage.config(scrollregion=self.scrollpage.bbox("all"))
+        self.items_frame.update_idletasks()  # Update the frame to get accurate width and height
+        self.canvas.config(scrollregion=self.canvas.bbox("all"))
 
-
-        """------Orders page------"""
+        """
+        #------Orders page------#
         #Create page frame
         self.orders_page = Frame(main)
         orders_tab = Frame(self.orders_page, bg=style.primary, 
@@ -185,6 +186,7 @@ class Gui:
         status_name.grid(row=0, column=3)
         cnt_name.grid(row=0, column=1)
         it_name.grid(row=0, column=2)
+        """
 
 
 
@@ -211,36 +213,28 @@ class Gui:
         shipment_add_b.grid(row=2, columnspan=2, padx=5, pady=2)
 
 
-        """------Settings page------"""
-        #Create page frame
-        self.settings_page = Frame(main)
-
-
-        #Pack stock page to start with
-        self.stock_page.pack()
-
     def goto_stock(self):
-        self.orders_page.forget()
+        #self.orders_page.forget()
         self.shipments_page.forget()
-        self.settings_page.forget()
+        #self.settings_page.forget()
         self.stock_page.pack()
 
     def goto_orders(self):
         self.stock_page.forget()
-        self.settings_page.forget()
+        #self.settings_page.forget()
         self.shipments_page.forget()
-        self.orders_page.pack()
+        #self.orders_page.pack()
 
     def goto_settings(self):
         self.stock_page.forget()
-        self.orders_page.forget()
+        #self.orders_page.forget()
         self.shipments_page.forget()
-        self.settings_page.pack()
+        #self.settings_page.pack()
 
     def goto_shipments(self):
         self.stock_page.forget()
-        self.orders_page.forget()
-        self.settings_page.forget()
+        #self.orders_page.forget()
+        #self.settings_page.forget()
         self.shipments_page.pack()
 
     def new_item(self):
@@ -277,11 +271,14 @@ class Gui:
         add.grid(row=5, column=1)
 
     def search(self):
-        y = self.v
         for item in self.items_list:
-            print(item.self.v)
-
-
+            item.item_frame.configure(bg=style.primary)
+        for item in self.items_list:
+            var_list = [item.name, item.count, item.ref_code, item.aisle, item.shelf]
+            print(var_list[self.v.get()])
+            if self.search_bar.get() == var_list[self.v.get()]:
+                self.unload_list
+                item.item_frame.configure(bg=style.accent2)
 
     def add_item(self):
         if self.validate_str(self.item_name_entry.get()) == False: 
@@ -297,11 +294,17 @@ class Gui:
             self.item_ref_code_entry.delete(first=0, last=100)
             self.reload_list()
 
-    def reload_list(self):
+    def unload_list(self):
+        print("unload function")
         for item in self.items_list:
             item.item_frame.forget()
+
+    def reload_list(self):
         for item in self.items_list:
             item.item_frame.pack()
+        # Configure the canvas to fit the content and enable scrolling
+        self.items_frame.update_idletasks()  # Update the frame to get accurate width and height
+        self.canvas.config(scrollregion=self.canvas.bbox("all"))
 
     def add_shipment(self):
         valid = False
@@ -312,8 +315,8 @@ class Gui:
                 cont += int(self.shipment_amount_e.get())
                 search.count = cont
                 search.count_label.configure(text=cont)
-                self.shipment_title_e.delete()
-                self.shipment_amount_e.delete()
+                self.shipment_title_e.delete(first=0, last=100)
+                self.shipment_amount_e.delete(first=0, last=100)
                 valid = True
         if valid == False:
             messagebox.showerror("Error", "There is no item called ({})".format(self.shipment_title_e.get()))
